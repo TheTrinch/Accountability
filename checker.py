@@ -3,6 +3,8 @@ from time import sleep
 from threading import Thread
 from datetime import datetime
 
+import tkinter as tk
+from tkinter import filedialog
 
 running = False
 
@@ -11,7 +13,7 @@ def give_penalty():
 
 def give_congrats(goal):
     print(f"Congrats! You achieved your goal: {goal}")
-    from prompt import set_goal
+    os.system("python prompt.py")
 
 def check_path(goal, filetype, folder_path):
     if check_folder(folder_path, filetype):
@@ -52,10 +54,10 @@ def check_folder(path, filetype):
 
     return found_young
 
-def check_goal(goal, deadline, filetype, folder_path):
+def check_goal(goal, deadline, file_type, folder_path):
     while running:
         if datetime.now() >= deadline:
-            check_path(goal, filetype, folder_path)
+            check_path(goal, file_type, folder_path)
             break
         sleep(5)
 
@@ -66,26 +68,32 @@ def load_goal_and_deadline():
             goal = lines[0].strip()
             deadline_str = lines[1].strip()
             deadline = datetime.strptime(deadline_str, "%Y-%m-%d %H:%M:%S")
-            return goal, deadline
+            file_type = lines[2].strip()
+            return goal, deadline, file_type
     except Exception as e:
         print(f"Could not load goal and deadline: {e}")
-        return None, None
+        return None, None, None
 
 if __name__ == "__main__":
 
-    submit_dir = "F:\\Programming\\Accountability\\submissions"
-    filetype = "mp4"
-
-    goal, due_date = load_goal_and_deadline()
-    if not goal or not due_date:
-        print("Goal or deadline not set. Please run the prompt script first.")
+    window = tk.Tk()
+    window.withdraw()
+    
+    try:
+        submit_dir = filedialog.askdirectory()
+    except Exception as e:
+        print("Invalid Directory")
+    
+    goal, due_date, file_type = load_goal_and_deadline()
+    if not goal or not due_date or not file_type:
+        print("Goal, deadline, or file type not set. Please run the prompt script first.")
         exit(1)
 
     print(f"Submission Directory: {submit_dir}")
-    print(f"File Type: {filetype}")
+    print(f"File Type: {file_type}")
     print(f"Due: {due_date.strftime('%A, %B %d, %Y at %I:%M %p')}")
     print(f"Goal: {goal}")
 
     running = True
-    thread = Thread(target=check_goal, args=(goal, due_date, filetype, submit_dir))
+    thread = Thread(target=check_goal, args=(goal, due_date, file_type, submit_dir))
     thread.start()
