@@ -3,6 +3,7 @@ from time import sleep
 from threading import Thread
 from datetime import datetime
 
+
 running = False
 
 def give_penalty():
@@ -10,6 +11,7 @@ def give_penalty():
 
 def give_congrats(goal):
     print(f"Congrats! You achieved your goal: {goal}")
+    from prompt import set_goal
 
 def check_path(goal, filetype, folder_path):
     if check_folder(folder_path, filetype):
