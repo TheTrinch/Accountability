@@ -78,11 +78,12 @@ if __name__ == "__main__":
 
     window = tk.Tk()
     window.withdraw()
+    submit_dir = filedialog.askdirectory()
+    window.destroy()
     
-    try:
-        submit_dir = filedialog.askdirectory()
-    except Exception as e:
-        print("Invalid Directory")
+    if not submit_dir:
+        print("No directory selected.")
+        exit(1)
     
     goal, due_date, file_type = load_goal_and_deadline()
     if not goal or not due_date or not file_type:

@@ -13,6 +13,7 @@ if os.path.exists('goal.txt'):
                 quit()
 
 goal = input("Enter your goal: ")
+
 days = {"SUN":6, "MON":0, "TUE":1, "WED":2, "THU":3, "FRI":4, "SAT":5}
 deadline = None
 while deadline not in days:
@@ -30,7 +31,7 @@ due_date = datetime(current_date.year, current_date.month, current_date.day + ti
 
 answer = None
 file_type = None
-while not answer == "yes":
+while answer != "yes":
     file_type = input("File type: ")    
     answer = input("Are you sure? [yes, no]: ")
 
