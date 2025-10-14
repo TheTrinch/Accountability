@@ -9,9 +9,14 @@ from tkinter import filedialog
 running = False
 
 def give_penalty():
-    print("Penalization")
+    """
+    Restrict access to any application or website the user picks.
+    and notify them that the penalties will be activated
+    """
+    print("THERE WILL BE CONSEQUENCES")
 
 def give_congrats(goal):
+    """Give the user a notification that all checks have passed and allow them to select another goal"""
     print(f"Congrats! You achieved your goal: {goal}")
     os.system("python prompt.py")
 
