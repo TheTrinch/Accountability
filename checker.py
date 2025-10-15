@@ -20,7 +20,12 @@ def give_penalty():
 def give_congrats(goal):
     """Give the user a notification that all checks have passed and allow them to select another goal"""
     print(f"Congrats! You achieved your goal: {goal}")
-    os.system("python prompt.py")
+
+    answer = input("Would you like to set another goal? [yes, no]: ")
+    if answer.upper() in ['Y', 'YES']:
+        os.system("python prompt.py")
+    else:
+        exit(1)
 
 
 def check_path(goal, filetype, folder_path):
@@ -92,13 +97,28 @@ def load_goal_and_deadline():
 
 
 if __name__ == "__main__":
-    window = tk.Tk()
-    window.withdraw()
-    submit_dir = filedialog.askdirectory()
-    window.destroy()
 
+    if not os.path.exists("goal.txt"):
+        print("Failed to open goal.txt")
+        exit(1)
+
+    submit_dir = NotImplemented
+    with open("goal.txt", 'r') as f:
+        lines = f.readlines()
+        try:
+            submit_dir = lines[3].strip()
+        except:
+            if submit_dir == NotImplemented:
+                window = tk.Tk()
+                window.withdraw()
+                submit_dir = filedialog.askdirectory()
+                window.destroy()
+
+                with open("goal.txt", 'a') as f:
+                    f.write(submit_dir + "\n")
+    
     if not submit_dir:
-        print("No directory selected.")
+        print("No directory selected. Exiting.")
         exit(1)
 
     goal, due_date, file_type = load_goal_and_deadline()
@@ -116,3 +136,4 @@ if __name__ == "__main__":
     running = True
     thread = Thread(target=check_goal, args=(goal, due_date, file_type, submit_dir))
     thread.start()
+    thread.join()
