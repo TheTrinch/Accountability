@@ -8,6 +8,7 @@ from tkinter import filedialog
 
 running = False
 
+
 def give_penalty():
     """
     Restrict access to any application or website the user picks.
@@ -15,16 +16,19 @@ def give_penalty():
     """
     print("THERE WILL BE CONSEQUENCES")
 
+
 def give_congrats(goal):
     """Give the user a notification that all checks have passed and allow them to select another goal"""
     print(f"Congrats! You achieved your goal: {goal}")
     os.system("python prompt.py")
+
 
 def check_path(goal, filetype, folder_path):
     if check_folder(folder_path, filetype):
         give_congrats(goal)
     else:
         give_penalty()
+
 
 def check_folder(path, filetype):
     if not path or not os.path.isdir(path):
@@ -45,9 +49,14 @@ def check_folder(path, filetype):
                 found_any = True
                 try:
                     mtime = os.path.getmtime(file_path)
-                    age = int((now - datetime.fromtimestamp(mtime)).total_seconds() // seconds_in_day)
+                    age = int(
+                        (now - datetime.fromtimestamp(mtime)).total_seconds()
+                        // seconds_in_day
+                    )
                     print(f"File: {file} > Age: {age} days")
-                    if (now - datetime.fromtimestamp(mtime)).total_seconds() <= one_week_seconds:
+                    if (
+                        now - datetime.fromtimestamp(mtime)
+                    ).total_seconds() <= one_week_seconds:
                         found_young = True
                 except Exception as e:
                     print(f"Failed to open file: {e}")
@@ -59,12 +68,14 @@ def check_folder(path, filetype):
 
     return found_young
 
+
 def check_goal(goal, deadline, file_type, folder_path):
     while running:
         if datetime.now() >= deadline:
             check_path(goal, file_type, folder_path)
             break
         sleep(5)
+
 
 def load_goal_and_deadline():
     try:
@@ -79,20 +90,22 @@ def load_goal_and_deadline():
         print(f"Could not load goal and deadline: {e}")
         return None, None, None
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     window = tk.Tk()
     window.withdraw()
     submit_dir = filedialog.askdirectory()
     window.destroy()
-    
+
     if not submit_dir:
         print("No directory selected.")
         exit(1)
-    
+
     goal, due_date, file_type = load_goal_and_deadline()
     if not goal or not due_date or not file_type:
-        print("Goal, deadline, or file type not set. Please run the prompt script first.")
+        print(
+            "Goal, deadline, or file type not set. Please run the prompt script first."
+        )
         exit(1)
 
     print(f"Submission Directory: {submit_dir}")
