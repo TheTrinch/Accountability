@@ -1,4 +1,9 @@
 import os
+import subprocess
+
+import asyncio
+from desktop_notifier import DesktopNotifier, Button
+
 from time import sleep
 from threading import Thread
 from datetime import datetime
@@ -9,30 +14,32 @@ from tkinter import filedialog
 running = False
 
 
-def give_penalty():
-    """
-    Restrict access to any application or website the user picks.
-    and notify them that the penalties will be activated
-    """
-    print("THERE WILL BE CONSEQUENCES")
+async def give_penalty():
+    notif = DesktopNotifier(app_name="Accountability")
+    await notif.send(title="Failure", message="You've failed to reach your goal...")
+    subprocess.run(["python", "blocker.py"])
 
 
-def give_congrats(goal):
-    """Give the user a notification that all checks have passed and allow them to select another goal"""
-    print(f"Congrats! You achieved your goal: {goal}")
-
-    answer = input("Would you like to set another goal? [yes, no]: ")
-    if answer.upper() in ['Y', 'YES']:
-        os.system("python prompt.py")
-    else:
-        exit(1)
+async def give_congrats(goal):
+    notif = DesktopNotifier(app_name="Accountability")
+    await notif.send(title="Success", message=f"You've achieved your goal ({goal})", buttons=[
+        Button (
+            title="Make a new goal",
+            on_pressed=lambda: subprocess.run(["cmd /c start cmd /k python prompt.py"], shell=True)
+        ),
+        Button (
+            title="Dismiss",
+            on_pressed=lambda: subprocess.run("exit")
+        )
+    ])
+    await asyncio.sleep(3)
 
 
 def check_path(goal, filetype, folder_path):
     if check_folder(folder_path, filetype):
-        give_congrats(goal)
+        asyncio.run(give_congrats(goal))
     else:
-        give_penalty()
+        asyncio.run(give_penalty())
 
 
 def check_folder(path, filetype):
@@ -68,7 +75,6 @@ def check_folder(path, filetype):
 
     if not found_any:
         print(f"No .{filetype} files found in the directory.")
-        give_penalty()
         return False
 
     return found_young
@@ -86,10 +92,12 @@ def load_goal_and_deadline():
     try:
         with open("goal.txt", "r") as f:
             lines = f.readlines()
+            
             goal = lines[0].strip()
             deadline_str = lines[1].strip()
             deadline = datetime.strptime(deadline_str, "%Y-%m-%d %H:%M:%S")
             file_type = lines[2].strip()
+            
             return goal, deadline, file_type
     except Exception as e:
         print(f"Could not load goal and deadline: {e}")
@@ -119,6 +127,7 @@ if __name__ == "__main__":
     
     if not submit_dir:
         print("No directory selected. Exiting.")
+        os.remove("goal.txt")
         exit(1)
 
     goal, due_date, file_type = load_goal_and_deadline()

@@ -1,4 +1,5 @@
 import os
+import subprocess
 from datetime import datetime
 
 if os.path.exists("goal.txt"):
@@ -9,33 +10,43 @@ if os.path.exists("goal.txt"):
             deadline = datetime.strptime(deadline_str, "%Y-%m-%d %H:%M:%S")
             if deadline > datetime.now():
                 print("Wait until the first goal is complete...")
-                os.system("python checker.py")
+                subprocess.run(["python", "checker.py"])
                 quit()
 
-goal = input("Enter your goal: ")
+goal = NotImplemented
+while goal == NotImplemented or not goal:
+    goal = input("Enter your goal: ")
 
 days = {"SUN": 6, "MON": 0, "TUE": 1, "WED": 2, "THU": 3, "FRI": 4, "SAT": 5}
 deadline = None
 while deadline not in days:
     deadline = input("Enter deadline day [SUN, MON, TUE, WED, THU, FRI, SAT]: ").upper()
+    
+    if deadline == "DEB":
+        break
+    
     if deadline not in days:
         print("Invalid day. Try again.")
 
-current_date = datetime.today()
+if deadline != "DEB":
+    current_date = datetime.today()
 
-timedelta = days[deadline] - current_date.weekday()
-if timedelta <= 0:
-    timedelta += 7
+    timedelta = days[deadline] - current_date.weekday()
+    if timedelta <= 0:
+        timedelta += 7
 
-due_date = datetime(
-    current_date.year, current_date.month, current_date.day + timedelta, 23, 59
-)
+    due_date = datetime(
+        current_date.year, current_date.month, current_date.day + timedelta, 23, 59
+    )
+else:
+    due_date = datetime.today()
 
-answer = None
+answer:str = None
 file_type = None
-while answer != "yes":
+while answer not in ['Y', 'YES']:
     file_type = input("File type: ")
-    answer = input("Are you sure? [yes, no]: ")
+    if file_type:
+        answer = input("Are you sure? [yes, no]: ").upper()
 
 with open("goal.txt", "w") as f:
     f.write(goal + "\n")
