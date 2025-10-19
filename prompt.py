@@ -21,10 +21,10 @@ days = {"SUN": 6, "MON": 0, "TUE": 1, "WED": 2, "THU": 3, "FRI": 4, "SAT": 5}
 deadline = None
 while deadline not in days:
     deadline = input("Enter deadline day [SUN, MON, TUE, WED, THU, FRI, SAT]: ").upper()
-    
+
     if deadline == "DEB":
         break
-    
+
     if deadline not in days:
         print("Invalid day. Try again.")
 
@@ -41,9 +41,9 @@ if deadline != "DEB":
 else:
     due_date = datetime.today()
 
-answer:str = None
+answer: str = None
 file_type = None
-while answer not in ['Y', 'YES']:
+while answer not in ["Y", "YES"]:
     file_type = input("File type: ")
     if file_type:
         answer = input("Are you sure? [yes, no]: ").upper()
