@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 
 import asyncio
 from desktop_notifier import DesktopNotifier, Button
@@ -28,11 +29,9 @@ async def give_congrats(goal):
         buttons=[
             Button(
                 title="Make a new goal",
-                on_pressed=lambda: subprocess.run(
-                    ["cmd /c start cmd /k python prompt.py"], shell=True
-                ),
+                on_pressed=lambda: subprocess.run(["python", "prompt.py"]),
             ),
-            Button(title="Dismiss", on_pressed=lambda: subprocess.run("exit")),
+            Button(title="Dismiss", on_pressed=None),
         ],
     )
     await asyncio.sleep(3)
@@ -110,7 +109,7 @@ def load_goal_and_deadline():
 if __name__ == "__main__":
     if not os.path.exists("goal.txt"):
         print("Failed to open goal.txt")
-        exit(1)
+        sys.exit(1)
 
     submit_dir = NotImplemented
     with open("goal.txt", "r") as f:
@@ -130,14 +129,14 @@ if __name__ == "__main__":
     if not submit_dir:
         print("No directory selected. Exiting.")
         os.remove("goal.txt")
-        exit(1)
+        sys.exit(1)
 
     goal, due_date, file_type = load_goal_and_deadline()
     if not goal or not due_date or not file_type:
         print(
             "Goal, deadline, or file type not set. Please run the prompt script first."
         )
-        exit(1)
+        sys.exit(1)
 
     print(f"Submission Directory: {submit_dir}")
     print(f"File Type: {file_type}")
